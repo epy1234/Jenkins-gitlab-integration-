@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins-server
+    privileged: true
+    hostname: jenkinsserver
+    user: root
+    labels:
+      com.example.description: "Jenkins-Server by Epy"
+    ports: 
+      - "9090:8080"
+      - "50000:50000"
+    networks:
+      jenkins-gitlab-net:
+        aliases: 
+          - jenkins-gitlab-net
+    volumes: 
+     - c:/jenkins-data:/var/jenkins_home
+     - /var/run/docker.sock:/var/run/docker.sock
+
+  gitlab: 
+    image: 'gitlab/gitlab-ee:latest'
+    container_name: gitlab-docker
+    restart: always
+    hostname: 'gitlab.example.com'
+    #environment:
+    #  GITLAB_OMNIBUS_CONFIG: 
+    #    external_url 'https://gitlab.example.com'
+        # Add any other gitlab.rb configuration here, each on its own line
+    ports:
+      - '80:80'
+      - '443:443'
+      - '22:22'
+    volumes:
+      - c:/GITLAB_HOME/config:/etc/gitlab
+      - c:/GITLAB_HOME/logs:/var/log/gitlab
+      - c:/GITLAB_HOME/data:/var/opt/gitlab
+    networks:
+      - jenkins-gitlab-net
+
+volumes: 
+  jenkins-data:
+  GITLAB_HOME:
+
+networks:
+  jenkins-gitlab-net:
+
+
+  
